@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Interest Calculator</title> 
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>SI Calculator</h1>
+        <div class="user-input">
+            <label for="principal"></label>
+            <input oninput="debounce()" type="number" id="principal" name="principal" placeholder="Principal amount" required>
+
+            <br><br>
+
+            <label for="ROI"></label>
+            <input oninput="debounce()"type="number" id="ROI" name="ROI" placeholder="Rate of Interest" required>
+
+            <br><br>
+
+            <label for="TimeInMonths"></label>
+            <input oninput="debounce()" type="number" id="TimeInMonths" name="TimeInMonths" placeholder="Time in Months" required> 
+        </div>
+        <div id="result"></div>
+
+    </div>
+
+        <script>
+            let timeout;
+            function debounce(){
+                clearTimeout(timeout);
+                timeout = setTimeout(function(){
+                    CalculateSI()
+                },1000)
+            }
+            async function CalculateSI()
+            {
+                const principal = document.getElementById("principal").value;
+                const RI = document.getElementById("ROI").value; 
+                const time_in_months = document.getElementById("TimeInMonths").value;
+                try
+                {
+                    const response = await fetch(`http://localhost:3000/calculate-si?principal=${principal}&rateOfInterest=${RI}&timeInMonths=${time_in_months}`);
+
+                    if (!response.ok)
+                    {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const interest = data.simpleInterest;
+                    const totalProfit = data.totalProfit;
+
+                    const resultElement = document.getElementById("result");
+                    resultElement.innerHTML = `Interest: ${interest}, Total Profit: ${totalProfit}`;
+                }
+                catch (error)
+                {
+                    console.error(error);
+                }
+            }
+        </script>
+</body>
+</html>
